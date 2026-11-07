@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#0B1B34">
+<meta name="description" content="Belka: alerta antecipado contra enchentes, deslizamentos, calor e tempo seco. Olhar longe. Proteger perto.">
+<title>Belka · Olhar longe. Proteger perto.</title>
+<!-- Fontes do Google Fonts. Se não carregarem, as pilhas de fallback mantêm a página legível. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+  /* ===== Tokens do manual de marca ===== */
+  :root {
+    --noite: #0B1B34;      /* Noite Orbital: topo e títulos */
+    --branco: #F7F3EC;     /* Branco Belka: fundo */
+    --ambar: #FFAA33;      /* Âmbar Sinal: só o ponto do logo e pequenos destaques em fundo escuro */
+    --azul: #2F5FD0;       /* Azul Órbita: botões, links, gráficos */
+    --ceu: #9DB8F5;        /* Céu: linhas sobre o azul-noite */
+    --nevoa: #ECE7DE;      /* Névoa: cartões */
+    --grafite: #1E2635;    /* texto corrido */
+    --suave: #4A5468;      /* texto secundário (7:1 sobre Branco Belka) */
+    --linha: rgba(11, 27, 52, 0.18);
+    --f-titulo: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --f-texto: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --raio: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--branco);
+    color: var(--grafite);
+    font: 400 1rem/1.5 var(--f-texto);
+  }
+  .pagina { max-width: 480px; margin: 0 auto; background: var(--branco); min-height: 100vh; }
+
+  h1, h2, h3 { font-family: var(--f-titulo); color: var(--noite); margin: 0; }
+  h2 { font-size: 1.5rem; line-height: 1.2; font-weight: 700; letter-spacing: -0.01em; }
+  h3 { font-size: 1.0625rem; font-weight: 600; }
+  p { margin: 0; }
+  a { color: var(--azul); text-underline-offset: 2px; }
+  .num { font-family: var(--f-titulo); font-variant-numeric: tabular-nums; }
+  .sr {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  :focus-visible { outline: 3px solid var(--azul); outline-offset: 3px; border-radius: 6px; }
+
+  /* ===== Topo ===== */
+  .topo {
+    position: relative; overflow: hidden;
+    background: var(--noite); color: var(--branco);
+    padding: 28px 20px 18px;
+  }
+  .topo-orbita { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .logo {
+    position: relative; display: inline-block;
+    font: 700 2.75rem/1 var(--f-titulo); letter-spacing: -0.03em; color: var(--branco);
+  }
+  .logo-b { position: relative; display: inline-block; }
+  /* o ponto âmbar junto ao "b", com um respiro na cor do fundo */
+  .logo-b::after {
+    content: ""; position: absolute; width: 0.27em; height: 0.27em; border-radius: 50%;
+    background: var(--ambar); right: -0.11em; top: 0.36em;
+    box-shadow: 0 0 0 0.05em var(--noite);
+  }
+  .slogan { position: relative; margin-top: 10px; font: 500 1.125rem/1.3 var(--f-titulo); }
+  .periodo { position: relative; margin-top: 18px; font-size: 0.9375rem; color: #D9E3FA; }
+
+  .barra-mun {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--noite); padding: 10px 20px 14px;
+    border-bottom: 1px solid rgba(157, 184, 245, 0.35);
+  }
+  .barra-mun label { display: block; color: #D9E3FA; font-size: 0.9375rem; margin-bottom: 6px; }
+  .barra-mun :focus-visible { outline-color: var(--ceu); }
+  select {
+    width: 100%; min-height: 48px; padding: 10px 44px 10px 14px;
+    font: 700 1.0625rem var(--f-texto); color: var(--noite);
+    background: var(--branco) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230B1B34' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;
+    border: 0; border-radius: 10px; appearance: none; -webkit-appearance: none;
+  }
+
+  /* ===== Conteúdo ===== */
+  main { padding: 8px 16px 24px; }
+  .secao { padding: 28px 0 8px; }
+  .secao + .secao { border-top: 1px solid var(--linha); margin-top: 20px; }
+  .rotulo-pergunta { font-family: var(--f-titulo); font-weight: 600; font-size: 0.9375rem; color: var(--azul); margin-bottom: 4px; }
+  .intro { margin-top: 8px; color: var(--suave); }
+  .cartao { background: var(--nevoa); border-radius: var(--raio); padding: 18px 16px; margin-top: 16px; }
+
+  /* selo de nível: cor + ícone + nome, nunca só cor */
+  .nivel {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px 4px 8px; border-radius: 999px;
+    font: 700 0.9375rem/1.2 var(--f-texto);
+    border: 1px solid var(--linha); white-space: nowrap;
+  }
+  .nivel .ic { width: 18px; height: 18px; flex: none; }
+  .nivel.grande { font-size: 1.25rem; padding: 8px 16px 8px 12px; }
+  .nivel.grande .ic { width: 26px; height: 26px; }
+  .ic { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Pergunta 1 */
+  .hoje-titulo { margin-top: 14px; font: 700 1.25rem/1.3 var(--f-titulo); color: var(--noite); }
+  .alerta-texto { margin-top: 10px; font-size: 1.125rem; line-height: 1.45; }
+  .alerta-texto strong { color: var(--noite); }
+  .orientacao { margin-top: 12px; font-size: 1.0625rem; font-weight: 700; color: var(--noite); }
+  .numeros { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 12px; margin: 18px 0 0; }
+  .numeros div { min-width: 0; }
+  .numeros dt { font-size: 0.875rem; color: var(--suave); }
+  .numeros dd { margin: 2px 0 0; font: 700 1.5rem/1.15 var(--f-titulo); color: var(--noite); font-variant-numeric: tabular-nums; }
+  .numeros dd small { font-size: 0.9375rem; font-weight: 500; }
+
+  .faixa-wrap { margin-top: 20px; }
+  .faixa { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; margin-top: 8px; }
+  .faixa span { height: 34px; border-radius: 3px; border: 1px solid var(--linha); }
+  .faixa-horas { display: grid; grid-template-columns: repeat(24, 1fr); font-size: 0.8125rem; color: var(--suave); margin-top: 4px; }
+  .faixa-resumo { margin-top: 10px; }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+  .legenda .nivel { font-size: 0.8125rem; padding: 3px 8px 3px 6px; }
+  .legenda .nivel .ic { width: 15px; height: 15px; }
+
+  details { margin-top: 12px; }
+  summary {
+    cursor: pointer; min-height: 44px; display: flex; align-items: center;
+    color: var(--azul); font-weight: 700;
+  }
+  .tabela-wrap { overflow-x: auto; margin-top: 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  th { font-family: var(--f-titulo); font-weight: 600; color: var(--noite); }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Pergunta 3: medidores */
+  .destaque { margin-top: 14px; font-size: 1.0625rem; }
+  .medidor { padding: 16px 0 6px; }
+  .medidor + .medidor { border-top: 1px solid var(--linha); }
+  .medidor-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .medidor-valor { font: 700 1.375rem/1 var(--f-titulo); color: var(--noite); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .medidor-sinal { font-size: 0.9375rem; color: var(--suave); }
+  .trilho { position: relative; height: 14px; margin: 12px 0 26px; border-radius: 7px; background: #fff; border: 1px solid var(--linha); }
+  .trilho .preench { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 7px; background: var(--azul); transition: width 0.4s ease; }
+  .trilho .marca { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1.5px; background: var(--noite); border-radius: 2px; }
+  .trilho .marca-txt { position: absolute; top: 20px; transform: translateX(-50%); font-size: 0.8125rem; color: var(--grafite); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .medidor-pe { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: center; font-size: 0.9375rem; }
+  .medidor-extra { margin-top: 6px; font-size: 0.9375rem; color: var(--suave); }
+
+  /* Pergunta 4: períodos */
+  .periodo-item { padding: 12px 0; }
+  .periodo-item + .periodo-item { border-top: 1px solid var(--linha); }
+  .periodo-linha { display: grid; grid-template-columns: 92px 1fr 64px; align-items: center; gap: 10px; }
+  .periodo-nome { font: 600 1rem var(--f-titulo); color: var(--noite); }
+  .barra { height: 22px; background: #fff; border: 1px solid var(--linha); border-radius: 6px; overflow: hidden; }
+  .barra span { display: block; height: 100%; background: var(--azul); transition: width 0.4s ease; }
+  .periodo-pct { text-align: right; font: 700 1.0625rem var(--f-titulo); color: var(--noite); font-variant-numeric: tabular-nums; }
+  .periodo-sub { margin: 6px 0 0; font-size: 0.875rem; color: var(--suave); }
+  .dica { margin-top: 16px; padding: 14px 16px; border-left: 4px solid var(--azul); background: #fff; border-radius: 0 10px 10px 0; font-size: 1.0625rem; }
+  .nota { margin-top: 10px; font-size: 0.9375rem; color: var(--suave); }
+
+  /* Pergunta 2: ranking */
+  .ranking { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+  .rank-item {
+    width: 100%; min-height: 44px; text-align: left; cursor: pointer;
+    background: var(--nevoa); color: var(--grafite);
+    border: 2px solid transparent; border-radius: var(--raio);
+    padding: 14px 14px 12px; font: inherit; display: block;
+  }
+  .rank-item[aria-pressed="true"] { border-color: var(--azul); background: #fff; }
+  .rank-topo { display: flex; align-items: baseline; gap: 10px; }
+  .rank-pos { font: 700 1rem var(--f-titulo); color: var(--suave); width: 1.2em; }
+  .rank-nome { flex: 1; font: 700 1.125rem var(--f-titulo); color: var(--noite); }
+  .rank-pct { font: 700 1.25rem var(--f-titulo); color: var(--noite); font-variant-numeric: tabular-nums; }
+  .pilha { display: flex; height: 16px; margin: 10px 0 8px; border-radius: 5px; overflow: hidden; border: 1px solid var(--linha); }
+  .pilha span { display: block; height: 100%; }
+  .rank-det { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 0.9375rem; }
+  .rank-sel { font-size: 0.875rem; font-weight: 700; color: var(--azul); }
+
+  /* Pergunta 5: impacto */
+  .impacto-num { font: 700 2.25rem/1.05 var(--f-titulo); color: var(--noite); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .impacto-bloco + .impacto-bloco { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--linha); }
+  .impacto-rot { margin-top: 4px; font-size: 1rem; }
+  .honesto { margin-top: 16px; padding: 14px 16px; background: #fff; border-radius: 10px; border: 1px solid var(--linha); font-size: 1.0625rem; }
+  .calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
+  .cal-sem { text-align: center; font-size: 0.8125rem; color: var(--suave); padding-bottom: 2px; }
+  .cal-sem abbr { text-decoration: none; }
+  .cal-dia {
+    min-height: 52px; border-radius: 8px; border: 1px solid var(--linha);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    font: 700 1rem var(--f-titulo); font-variant-numeric: tabular-nums;
+  }
+  .cal-dia .ic { width: 16px; height: 16px; }
+  .assin { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 0; }
+  .assin div { display: flex; flex-direction: column; justify-content: space-between; }
+  .assin dt { font-size: 0.875rem; color: var(--suave); }
+  .assin dd { margin: 2px 0 0; font: 700 1.375rem/1.15 var(--f-titulo); color: var(--noite); }
+
+  /* Como chega um alerta */
+  .selo {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--grafite); color: #fff; border-radius: 10px;
+    padding: 12px 14px; font-weight: 700; font-size: 1rem; margin-top: 16px;
+  }
+  .selo .ic { width: 22px; height: 22px; flex: none; margin-top: 1px; }
+  .celular { margin-top: 12px; background: var(--noite); border-radius: 22px; padding: 18px 14px; }
+  .notif { background: var(--branco); border-radius: 14px; padding: 14px; }
+  .notif-app { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--suave); }
+  .notif-icone {
+    position: relative; width: 22px; height: 22px; border-radius: 6px; background: var(--noite); color: var(--branco);
+    font: 700 0.875rem/22px var(--f-titulo); text-align: center;
+  }
+  .notif-icone::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--ambar); right: 3px; top: 6px; }
+  .notif .nivel { margin-top: 10px; text-transform: uppercase; font-size: 0.8125rem; letter-spacing: 0.02em; }
+  .notif h3 { margin-top: 8px; font-size: 1.1875rem; }
+  .notif p { margin-top: 4px; font-size: 1rem; line-height: 1.45; }
+  .sms { margin-top: 16px; background: #fff; border: 1px solid var(--linha); border-radius: 14px 14px 14px 4px; padding: 14px; font-size: 1rem; }
+  .sms-meta { margin-top: 6px; font-size: 0.9375rem; color: var(--suave); }
+
+  /* Rodapé */
+  .rodape { background: var(--noite); color: var(--branco); padding: 28px 20px 36px; }
+  .rodape p + p { margin-top: 12px; }
+  .rodape a, .rodape summary { color: var(--ceu); }
+  .rodape :focus-visible { outline-color: var(--ceu); }
+  .rodape .emergencia { font: 700 1.0625rem/1.4 var(--f-titulo); }
+  .rodape .aviso { font-size: 1rem; }
+  .rodape .discreto { color: #D9E3FA; font-size: 0.9375rem; }
+  .rodape table { color: var(--branco); font-size: 0.875rem; }
+  .rodape th { color: var(--branco); }
+  .rodape th, .rodape td { border-bottom-color: rgba(157, 184, 245, 0.3); }
+  .rodape .logo { font-size: 1.75rem; }
+
+  /* Carregamento */
+  .carregar { margin-top: 20px; }
+  .botao {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 48px;
+    padding: 10px 20px; border-radius: 10px; border: 0; cursor: pointer;
+    background: var(--azul); color: #fff; font: 700 1.0625rem var(--f-texto);
+  }
+  .botao:focus-within { outline: 3px solid var(--noite); outline-offset: 3px; }
+  .erro { margin-top: 12px; color: #A3182B; font-weight: 700; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<!-- Ícones dos níveis (desenhados à mão, sem biblioteca) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9"/></symbol>
+  <symbol id="ic-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="ic-backpack" viewBox="0 0 24 24"><path d="M5 10a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1Z"/><path d="M9 5V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M8 21v-5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v5"/><path d="M8 12h8"/></symbol>
+  <symbol id="ic-siren" viewBox="0 0 24 24"><path d="M7 18v-6a5 5 0 0 1 10 0v6"/><path d="M5 21a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1Z"/><path d="M21 12h1M2 12h1M18.4 5.6l.7-.7M4.9 4.9l.7.7M12 2v1"/></symbol>
+  <symbol id="ic-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+</svg>
+
+<div class="pagina">
+  <header class="topo">
+    <!-- órbita decorativa com o sinal âmbar -->
+    <svg class="topo-orbita" viewBox="0 0 480 220" preserveAspectRatio="xMaxYMid slice" aria-hidden="true" focusable="false">
+      <ellipse cx="400" cy="150" rx="300" ry="62" transform="rotate(-14 400 150)" fill="none" stroke="#9DB8F5" stroke-opacity="0.45" stroke-width="1"/>
+      <ellipse cx="420" cy="170" rx="250" ry="44" transform="rotate(-14 420 170)" fill="none" stroke="#9DB8F5" stroke-opacity="0.22" stroke-width="1"/>
+      <circle cx="402" cy="76" r="5" fill="#FFAA33"/>
+    </svg>
+    <h1 class="logo" aria-label="belka"><span class="logo-b">b</span>elka</h1>
+    <p class="slogan">Olhar longe.<br>Proteger perto.</p>
+    <p class="periodo" id="linha-periodo">Carregando os dados…</p>
+  </header>
+
+  <div class="barra-mun" id="barra-mun" hidden>
+    <label for="sel-mun">Seu município</label>
+    <select id="sel-mun"></select>
+  </div>
+
+  <main id="principal">
+    <!-- Painel de carregamento: aparece só se o fetch falhar -->
+    <section class="secao carregar" id="painel-carregar" hidden aria-labelledby="t-carregar">
+      <h2 id="t-carregar">Escolha o arquivo de dados</h2>
+      <p class="intro">Não foi possível ler o belka_mvp.json automaticamente. Isso acontece quando a página é aberta direto do computador. Escolha o arquivo exportado da camada Ouro para continuar.</p>
+      <p style="margin-top:16px">
+        <label class="botao">Carregar dados
+          <input type="file" id="arquivo" accept=".json,application/json" class="sr">
+        </label>
+      </p>
+      <p class="erro" id="erro-carregar" role="alert"></p>
+    </section>
+
+    <div id="conteudo" hidden>
+      <!-- Pergunta 1 -->
+      <section class="secao" aria-labelledby="t-hoje">
+        <p class="rotulo-pergunta">Pergunta 1</p>
+        <h2 id="t-hoje">Como está o seu município hoje?</h2>
+        <p class="intro" id="hoje-intro"></p>
+        <div class="cartao" id="cartao-hoje" aria-live="polite" aria-atomic="true"></div>
+        <div class="cartao faixa-wrap" id="faixa-hoje"></div>
+      </section>
+
+      <!-- Pergunta 3 -->
+      <section class="secao" aria-labelledby="t-sinais">
+        <p class="rotulo-pergunta">Pergunta 3</p>
+        <h2 id="t-sinais">Qual sinal chegou mais perto do perigo?</h2>
+        <p class="intro">O pior valor de cada sinal no período, com as marcas dos limiares de Fique de olho, Prepare-se e Aja agora.</p>
+        <p class="destaque" id="sinais-destaque"></p>
+        <div class="cartao" id="sinais"></div>
+      </section>
+
+      <!-- Pergunta 4 -->
+      <section class="secao" aria-labelledby="t-periodos">
+        <p class="rotulo-pergunta">Pergunta 4</p>
+        <h2 id="t-periodos">Em que horário do dia o risco é maior?</h2>
+        <p class="intro">Parte das horas de cada período que ficou em algum alerta (Fique de olho ou acima).</p>
+        <div class="cartao" id="periodos"></div>
+        <p class="dica" id="periodos-dica"></p>
+        <p class="nota" id="periodos-geral"></p>
+      </section>
+
+      <!-- Pergunta 2 -->
+      <section class="secao" aria-labelledby="t-ranking">
+        <p class="rotulo-pergunta">Pergunta 2</p>
+        <h2 id="t-ranking">Onde a atenção foi maior?</h2>
+        <p class="intro">Municípios ordenados pela parte das horas em alerta. Toque em um município para ver os dados dele.</p>
+        <ol class="ranking" id="ranking"></ol>
+      </section>
+
+      <!-- Pergunta 5 -->
+      <section class="secao" aria-labelledby="t-impacto">
+        <p class="rotulo-pergunta">Pergunta 5 · impacto</p>
+        <h2 id="t-impacto">Quantas pessoas vivem onde o nível chegou a Prepare-se ou Aja agora?</h2>
+        <div class="cartao" id="impacto"></div>
+        <p class="honesto" id="impacto-honesto"></p>
+        <div class="cartao">
+          <h3 id="t-cal">O pior nível de cada dia nos 5 municípios</h3>
+          <div class="calendario" id="calendario" role="list" aria-labelledby="t-cal"></div>
+          <p class="nota" id="cal-todos"></p>
+          <details>
+            <summary>Ver os dias em tabela</summary>
+            <div class="tabela-wrap" id="cal-tabela"></div>
+          </details>
+        </div>
+        <div class="cartao">
+          <h3 id="t-assin">Assinantes da Belka em <span id="assin-mun"></span></h3>
+          <dl class="assin" id="assin"></dl>
+          <p class="nota">Assinantes simulados para o MVP. Só aparecem somados por município; grupos com menos de 5 pessoas não são mostrados.</p>
+        </div>
+      </section>
+
+      <!-- Como chega um alerta -->
+      <section class="secao" aria-labelledby="t-exemplo">
+        <h2 id="t-exemplo">Como chega um alerta</h2>
+        <p class="intro">Todo alerta segue a mesma ordem: nível, o quê, onde, quando e o que fazer.</p>
+        <p class="selo"><svg class="ic" aria-hidden="true"><use href="#ic-info"/></svg>Exemplo ilustrativo, não aconteceu no período.</p>
+        <div class="celular" id="exemplo-celular"></div>
+        <h3 style="margin-top:20px">A mesma mensagem por SMS, para celulares simples</h3>
+        <p class="sms" id="exemplo-sms"></p>
+        <p class="sms-meta" id="exemplo-sms-meta"></p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="rodape" id="rodape">
+    <p class="logo" aria-label="belka"><span class="logo-b">b</span>elka</p>
+    <p class="aviso" id="rodape-aviso">Indicador experimental. Não substitui a Defesa Civil.</p>
+    <p class="aviso">Em caso de perigo, siga sempre as orientações da Defesa Civil.</p>
+    <p class="emergencia">Emergência: Defesa Civil 199 · Bombeiros 193 · SAMU 192</p>
+    <p class="discreto" id="rodape-fontes"></p>
+    <details>
+      <summary>Como calculamos</summary>
+      <p class="discreto" style="margin-top:6px">O nível de cada hora é o maior entre os cinco riscos. O nível do dia é o maior nível das 24 horas. As somas de 24 h e 72 h usam as horas disponíveis, então os primeiros dias do período têm janela parcial.</p>
+      <div class="tabela-wrap">
+        <table>
+          <caption class="sr">Limiares por risco e nível</caption>
+          <thead><tr><th scope="col">Risco e sinal</th><th scope="col">Fique de olho</th><th scope="col">Prepare-se</th><th scope="col">Aja agora</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Enchente: chuva na hora ou em 24 h</th><td>≥ 20 mm/h ou ≥ 30 mm</td><td>≥ 30 mm/h ou ≥ 50 mm</td><td>≥ 60 mm/h ou ≥ 100 mm</td></tr>
+            <tr><th scope="row">Deslizamento: chuva em 72 h</th><td>≥ 50 mm</td><td>≥ 80 mm</td><td>≥ 120 mm</td></tr>
+            <tr><th scope="row">Calor extremo: temperatura</th><td>≥ 32 °C</td><td>≥ 35 °C</td><td>≥ 38 °C</td></tr>
+            <tr><th scope="row">Tempo seco: umidade</th><td>≤ 30 %</td><td>≤ 20 %</td><td>&lt; 12 %</td></tr>
+            <tr><th scope="row">Vento forte: rajada</th><td>≥ 40 km/h</td><td>≥ 60 km/h</td><td>≥ 100 km/h</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <p class="discreto">Nenhum dado pessoal é exibido: assinantes só aparecem agregados por município.</p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+/* ===================== Formatação brasileira ===================== */
+const fmtInt = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+const fmt1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const n0 = (v) => fmtInt.format(v);
+const n1 = (v) => fmt1.format(v);
+const pct = (v) => fmt1.format(v) + " %";
+const DIAS_SEMANA = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
+const SEM_CURTA = [["dom", "domingo"], ["seg", "segunda"], ["ter", "terça"], ["qua", "quarta"], ["qui", "quinta"], ["sex", "sexta"], ["sáb", "sábado"]];
+const PERIODOS = ["madrugada", "manhã", "tarde", "noite"];
+
+// escapa texto vindo do JSON antes de entrar no HTML
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+// "2026-10-25" -> "25/10" (ou "25/10/2026")
+function dataBR(iso, comAno) {
+  const [a, m, d] = iso.split("-");
+  return comAno ? `${d}/${m}/${a}` : `${d}/${m}`;
+}
+function diaSemana(iso) {
+  const [a, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(a, m - 1, d)).getUTCDay();
+}
+// "2026-11-07T22:36:48" -> "07/11/2026 às 22:36" (sem converter fuso)
+function dataHoraBR(s) {
+  const [dia, hora] = String(s).split("T");
+  return `${dataBR(dia, true)}${hora ? " às " + hora.slice(0, 5) : ""}`;
+}
+// junta lista em português: "a, b e c"
+function juntar(lista) {
+  if (lista.length <= 1) return lista.join("");
+  return lista.slice(0, -1).join(", ") + " e " + lista[lista.length - 1];
+}
+const soma = (arr, f) => arr.reduce((t, x) => t + f(x), 0);
+const arred1 = (v) => Math.round(v * 10) / 10;
+
+/* ===================== Estado ===================== */
+let D = null;            // dados do JSON
+let porMun = new Map();  // municipio_id -> horas ordenadas
+let niveis = new Map();  // nivel_id -> nível
+let dias = [];           // datas do período, ordenadas
+let atual = null;        // municipio_id selecionado
+
+/* ===================== Selo de nível (cor + ícone + nome) ===================== */
+function selo(id, extra) {
+  const nv = niveis.get(id);
+  return `<span class="nivel ${extra || ""}" style="background:${esc(nv.cor_fundo_hex)};color:${esc(nv.cor_texto_hex)}">` +
+    `<svg class="ic" aria-hidden="true"><use href="#ic-${esc(nv.icone)}"/></svg>${esc(nv.nivel_nome)}</span>`;
+}
+
+/* ===================== Carregamento ===================== */
+function validar(d) {
+  const faltando = ["niveis", "municipios", "horas"].filter((k) => !Array.isArray(d && d[k]));
+  if (faltando.length) throw new Error("O arquivo não tem o formato esperado: falta " + juntar(faltando) + ".");
+  if (!d.horas.length) throw new Error("O arquivo não tem horas de dados.");
+}
+
+function iniciar(d) {
+  validar(d);
+  D = d;
+  niveis = new Map(d.niveis.map((n) => [n.nivel_id, n]));
+  porMun = new Map(d.municipios.map((m) => [m.municipio_id, []]));
+  d.horas.forEach((h) => { if (porMun.has(h.municipio_id)) porMun.get(h.municipio_id).push(h); });
+  porMun.forEach((arr) => arr.sort((a, b) => (a.data_hora < b.data_hora ? -1 : 1)));
+  dias = [...new Set(d.horas.map((h) => h.data))].sort();
+
+  // linha do período, calculada pelo próprio JSON
+  document.getElementById("linha-periodo").textContent =
+    `Dados de ${dataBR(dias[0])} a ${dataBR(dias[dias.length - 1], true)}` +
+    (d.gerado_em ? ` · atualizado em ${dataHoraBR(d.gerado_em)}` : "");
+
+  // seletor: padrão é o município mais populoso
+  const sel = document.getElementById("sel-mun");
+  const ordenados = [...d.municipios].sort((a, b) => a.municipio_nome.localeCompare(b.municipio_nome, "pt-BR"));
+  sel.innerHTML = ordenados.map((m) => `<option value="${m.municipio_id}">${esc(m.municipio_nome)} (${esc(m.uf)})</option>`).join("");
+  const maisPopuloso = [...d.municipios].sort((a, b) => (b.populacao || 0) - (a.populacao || 0))[0];
+  sel.addEventListener("change", () => selecionar(Number(sel.value)));
+
+  // rodapé com aviso e fontes do JSON
+  if (d.aviso) document.getElementById("rodape-aviso").textContent = d.aviso;
+  if (Array.isArray(d.fontes) && d.fontes.length) document.getElementById("rodape-fontes").textContent = "Fontes: " + d.fontes.join("; ") + ".";
+
+  document.getElementById("painel-carregar").hidden = true;
+  document.getElementById("barra-mun").hidden = false;
+  document.getElementById("conteudo").hidden = false;
+
+  renderImpacto();
+  renderExemplo();
+  selecionar(maisPopuloso.municipio_id);
+}
+
+function mostrarCarregar(msg) {
+  document.getElementById("linha-periodo").textContent = "Aguardando o arquivo de dados.";
+  document.getElementById("painel-carregar").hidden = false;
+  if (msg) document.getElementById("erro-carregar").textContent = msg;
+}
+
+document.getElementById("arquivo").addEventListener("change", (ev) => {
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    try { iniciar(JSON.parse(leitor.result)); }
+    catch (e) { mostrarCarregar(e.message.startsWith("O arquivo") ? e.message : "Não foi possível ler este arquivo. Escolha o belka_mvp.json exportado da camada Ouro."); }
+  };
+  leitor.onerror = () => mostrarCarregar("Não foi possível abrir o arquivo. Tente de novo.");
+  leitor.readAsText(f, "utf-8");
+});
+
+fetch("belka_mvp.json", { cache: "no-cache" })
+  .then((r) => { if (!r.ok) throw new Error("http"); return r.json(); })
+  .then(iniciar)
+  .catch((e) => mostrarCarregar(e && e.message && e.message.startsWith("O arquivo") ? e.message : ""));
+
+/* ===================== Seleção de município ===================== */
+function selecionar(id) {
+  atual = id;
+  document.getElementById("sel-mun").value = String(id);
+  renderHoje();
+  renderSinais();
+  renderPeriodos();
+  renderRanking();
+  renderAssinantes();
+}
+
+function municipio(id) { return D.municipios.find((m) => m.municipio_id === id); }
+
+/* ===================== Pergunta 1: hoje ===================== */
+function renderHoje() {
+  const m = municipio(atual);
+  const ultimo = dias[dias.length - 1];
+  const hs = porMun.get(atual).filter((h) => h.data === ultimo).sort((a, b) => a.hora - b.hora);
+  const nivelDia = Math.max(...hs.map((h) => h.nivel_id));
+  const critica = nivelDia > 0 ? hs.find((h) => h.nivel_id === nivelDia) : null;
+  const nv = niveis.get(nivelDia);
+  const tMax = Math.max(...hs.map((h) => h.temperatura_c));
+  const uMin = Math.min(...hs.filter((h) => h.umidade_pct != null).map((h) => h.umidade_pct));
+  const chuva = arred1(soma(hs, (h) => h.precipitacao_mm || 0));
+  const risco = critica ? critica.risco_principal : "nenhum";
+  const motivo = critica ? critica.motivo : "Nenhum sinal acima do limiar";
+
+  document.getElementById("hoje-intro").textContent =
+    `Dia mais recente do arquivo: ${DIAS_SEMANA[diaSemana(ultimo)]}, ${dataBR(ultimo, true)}.`;
+
+  // fórmula do alerta: nível → o quê → onde → quando → o que fazer
+  const oQue = critica ? `Risco de ${esc(risco)}` : "Nenhum risco acima do limiar";
+  const quando = critica ? ` a partir das ${critica.hora}h` : " nas 24 horas";
+  document.getElementById("cartao-hoje").innerHTML = `
+    ${selo(nivelDia, "grande")}
+    <p class="hoje-titulo">${oQue} em ${esc(m.municipio_nome)}${quando}.</p>
+    ${critica ? `<p class="alerta-texto">${esc(motivo)}.</p>` : ""}
+    <p class="orientacao">${esc(nv.orientacao)}</p>
+    <dl class="numeros">
+      <div><dt>Hora crítica</dt><dd>${critica ? critica.hora + "h" : "<small>nenhuma</small>"}</dd></div>
+      <div><dt>Risco principal</dt><dd><small>${esc(risco)}</small></dd></div>
+      <div><dt>Temperatura máxima</dt><dd>${n1(tMax)} °C</dd></div>
+      <div><dt>Umidade mínima</dt><dd>${isFinite(uMin) ? n0(uMin) + " %" : "<small>sem dado</small>"}</dd></div>
+      <div><dt>Chuva do dia</dt><dd>${n1(chuva)} mm</dd></div>
+      <div><dt>Contexto</dt><dd><small>${esc(m.contexto_territorio || "")}</small></dd></div>
+    </dl>`;
+
+  // faixa das 24 horas
+  const faixas = resumoFaixas(hs);
+  document.getElementById("faixa-hoje").innerHTML = `
+    <h3>As 24 horas de ${dataBR(ultimo)}</h3>
+    <div class="faixa" role="img" aria-label="Nível de cada hora. ${esc(faixas)}">
+      ${hs.map((h) => { const c = niveis.get(h.nivel_id); return `<span style="background:${esc(c.cor_fundo_hex)}" title="${h.hora}h: ${esc(c.nivel_nome)}"></span>`; }).join("")}
+    </div>
+    <div class="faixa-horas" aria-hidden="true">
+      <span style="grid-column:1/span 4">0h</span><span style="grid-column:7/span 4">6h</span>
+      <span style="grid-column:13/span 4">12h</span><span style="grid-column:19/span 4">18h</span>
+      <span style="grid-column:23/span 2;text-align:right">23h</span>
+    </div>
+    <p class="faixa-resumo">${esc(faixas)}</p>
+    <ul class="legenda" aria-label="Legenda dos níveis">${[...niveis.keys()].sort().map((id) => `<li>${selo(id)}</li>`).join("")}</ul>
+    <details>
+      <summary>Ver as 24 horas em tabela</summary>
+      <div class="tabela-wrap"><table>
+        <thead><tr><th scope="col">Hora</th><th scope="col">Nível</th><th scope="col" class="n">Temp.</th><th scope="col" class="n">Chuva</th><th scope="col" class="n">Umid.</th></tr></thead>
+        <tbody>${hs.map((h) => `<tr><td>${h.hora}h</td><td>${esc(h.nivel_nome)}</td><td class="n">${n1(h.temperatura_c)} °C</td><td class="n">${n1(h.precipitacao_mm)} mm</td><td class="n">${h.umidade_pct == null ? "–" : n0(h.umidade_pct) + " %"}</td></tr>`).join("")}</tbody>
+      </table></div>
+    </details>`;
+}
+
+// texto equivalente à faixa: "Fique de olho das 13h às 16h"
+function resumoFaixas(hs) {
+  const blocos = [];
+  hs.forEach((h) => {
+    const ult = blocos[blocos.length - 1];
+    if (ult && ult.nivel === h.nivel_id && ult.fim === h.hora - 1) ult.fim = h.hora;
+    else blocos.push({ nivel: h.nivel_id, ini: h.hora, fim: h.hora });
+  });
+  const alertas = blocos.filter((b) => b.nivel > 0);
+  if (!alertas.length) return `As ${hs.length} horas ficaram em ${niveis.get(0).nivel_nome}.`;
+  return juntar(alertas.map((b) => `${niveis.get(b.nivel).nivel_nome} ${b.ini === b.fim ? "às " + b.ini + "h" : "das " + b.ini + "h às " + b.fim + "h"}`)) +
+    `. As demais horas ficaram em ${niveis.get(0).nivel_nome}.`;
+}
+
+/* ===================== Pergunta 3: sinais ===================== */
+// limiares documentados no notebook 03_ouro (regras v1)
+function sinaisDoMunicipio(hs) {
+  const max = (k) => Math.max(...hs.filter((h) => h[k] != null).map((h) => h[k]));
+  const min = (k) => Math.min(...hs.filter((h) => h[k] != null).map((h) => h[k]));
+  const nivelAlto = (v, l) => (v >= l[2] ? 3 : v >= l[1] ? 2 : v >= l[0] ? 1 : 0);
+  const conta = (r) => hs.filter((h) => h.risco_principal === r).length;
+  const c24 = max("chuva_24h_mm"), c1 = max("precipitacao_mm");
+  const umid = min("umidade_pct");
+  return [
+    { titulo: "Enchente", sinal: "Chuva em 24 h", un: "mm", v: c24, lim: [30, 50, 100], ini: 0, fim: 110, risco: "enchente",
+      nivel: Math.max(nivelAlto(c24, [30, 50, 100]), nivelAlto(c1, [20, 30, 60])),
+      perto: Math.max(c24 / 30, c1 / 20),
+      extra: `Maior chuva em 1 hora: ${n1(c1)} mm (limiares de 20, 30 e 60 mm/h).` },
+    { titulo: "Deslizamento", sinal: "Chuva em 72 h", un: "mm", v: max("chuva_72h_mm"), lim: [50, 80, 120], ini: 0, fim: 130, risco: "deslizamento" },
+    { titulo: "Calor extremo", sinal: "Temperatura máxima", un: "°C", v: max("temperatura_c"), lim: [32, 35, 38], ini: 20, fim: 40, risco: "calor extremo" },
+    { titulo: "Tempo seco", sinal: "Umidade mínima (quanto menor, pior)", un: "%", v: umid, lim: [30, 20, 12], ini: 60, fim: 0, risco: "tempo seco",
+      nivel: !isFinite(umid) ? 0 : umid < 12 ? 3 : umid <= 20 ? 2 : umid <= 30 ? 1 : 0,
+      perto: isFinite(umid) && umid > 0 ? 30 / umid : 0 },
+    { titulo: "Vento forte", sinal: "Rajada máxima", un: "km/h", v: max("rajada_kmh"), lim: [40, 60, 100], ini: 0, fim: 110, risco: "vento forte" },
+  ].map((s) => {
+    if (s.nivel == null) s.nivel = isFinite(s.v) ? nivelAlto(s.v, s.lim) : 0;
+    if (s.perto == null) s.perto = isFinite(s.v) ? s.v / s.lim[0] : 0;
+    s.horas = conta(s.risco);
+    // escala cresce se o valor passar do fim previsto
+    if (isFinite(s.v)) {
+      if (s.ini < s.fim) { if (s.v > s.fim) s.fim = s.v * 1.05; if (s.v < s.ini) s.ini = Math.floor(s.v - 2); }
+      else if (s.v > s.ini) s.ini = Math.min(100, s.v + 5); // umidade: escala invertida
+    }
+    return s;
+  });
+}
+
+function renderSinais() {
+  const m = municipio(atual);
+  const sinais = sinaisDoMunicipio(porMun.get(atual)).sort((a, b) => b.perto - a.perto);
+  const top = sinais[0];
+  const valTxt = (s) => (s.un === "%" ? n0(s.v) : n1(s.v)) + " " + s.un;
+  let frase;
+  if (top.nivel > 0) {
+    frase = `Em ${m.municipio_nome}, o sinal que chegou mais perto do perigo foi ${top.sinal.split(" (")[0].toLowerCase()} (${top.titulo.toLowerCase()}): ${valTxt(top)}, acima do limiar de ${niveis.get(top.nivel).nivel_nome}.`;
+  } else {
+    frase = `Em ${m.municipio_nome}, nenhum sinal passou do limiar de ${niveis.get(1).nivel_nome}. O que chegou mais perto foi ${top.titulo.toLowerCase()}, com ${valTxt(top)}.`;
+  }
+  document.getElementById("sinais-destaque").textContent = frase;
+
+  const pos = (s, v) => Math.max(0, Math.min(100, ((v - s.ini) / (s.fim - s.ini)) * 100));
+  document.getElementById("sinais").innerHTML = sinais.map((s) => {
+    const p = isFinite(s.v) ? pos(s, s.v) : 0;
+    const marcas = s.lim.map((l, i) => {
+      const x = pos(s, l);
+      const pre = s.ini > s.fim ? (i === 2 ? "<" : "≤") : "";
+      const tx = x > 93 ? "translateX(-100%)" : x < 7 ? "translateX(0)" : "translateX(-50%)";
+      return `<span class="marca" style="left:${x}%"></span><span class="marca-txt" style="left:${x}%;transform:${tx}">${pre}${n0(l)}</span>`;
+    }).join("");
+    const nomesLim = s.lim.map((l, i) => `${niveis.get(i + 1).nivel_nome} ${s.ini > s.fim ? (i === 2 ? "abaixo de" : "até") : "a partir de"} ${n0(l)} ${s.un}`);
+    return `<div class="medidor">
+      <div class="medidor-topo"><h3>${esc(s.titulo)}</h3><span class="medidor-valor">${isFinite(s.v) ? valTxt(s) : "sem dado"}</span></div>
+      <p class="medidor-sinal">${esc(s.sinal)}</p>
+      <div class="trilho" role="img" aria-label="${esc(s.sinal)}: pior valor ${isFinite(s.v) ? valTxt(s) : "sem dado"}. Limiares: ${esc(juntar(nomesLim))}.">
+        <span class="preench" style="width:${p}%"></span>${marcas}
+      </div>
+      <div class="medidor-pe">${selo(s.nivel)}<span><strong class="num">${n0(s.horas)}</strong> ${s.horas === 1 ? "hora" : "horas"} como risco principal</span></div>
+      ${s.extra ? `<p class="medidor-extra">${esc(s.extra)}</p>` : ""}
+    </div>`;
+  }).join("");
+}
+
+/* ===================== Pergunta 4: períodos ===================== */
+function estatPeriodos(hs) {
+  return PERIODOS.map((p) => {
+    const x = hs.filter((h) => h.periodo_dia === p);
+    const um = x.filter((h) => h.umidade_pct != null);
+    return {
+      p, total: x.length,
+      alerta: x.filter((h) => h.nivel_id >= 1).length,
+      pct: x.length ? (x.filter((h) => h.nivel_id >= 1).length / x.length) * 100 : 0,
+      tMed: x.length ? soma(x, (h) => h.temperatura_c) / x.length : NaN,
+      uMed: um.length ? soma(um, (h) => h.umidade_pct) / um.length : NaN,
+      chuva: arred1(soma(x, (h) => h.precipitacao_mm || 0)),
+    };
+  });
+}
+function maiorPeriodo(est) { return est.reduce((a, b) => (b.pct > a.pct ? b : a)); }
+
+function renderPeriodos() {
+  const m = municipio(atual);
+  const est = estatPeriodos(porMun.get(atual));
+  // escala até a próxima dezena acima do maior valor, para não exagerar barras pequenas
+  const escala = Math.max(10, Math.ceil(Math.max(...est.map((e) => e.pct)) / 10) * 10);
+  document.getElementById("periodos").innerHTML = est.map((e) => `
+    <div class="periodo-item">
+      <div class="periodo-linha">
+        <span class="periodo-nome">${e.p[0].toUpperCase() + e.p.slice(1)}</span>
+        <span class="barra" aria-hidden="true"><span style="width:${(e.pct / escala) * 100}%"></span></span>
+        <span class="periodo-pct">${pct(e.pct)}</span>
+      </div>
+      <p class="periodo-sub">${n0(e.alerta)} de ${n0(e.total)} horas em alerta. Temperatura média ${n1(e.tMed)} °C, umidade média ${isFinite(e.uMed) ? n0(e.uMed) + " %" : "sem dado"}, chuva total ${n1(e.chuva)} mm.</p>
+    </div>`).join("");
+
+  const top = maiorPeriodo(est);
+  document.getElementById("periodos-dica").textContent = top.pct > 0
+    ? `Em ${m.municipio_nome}, a ${top.p} concentra mais horas em alerta (${pct(top.pct)}): quando houver aviso, deixe para outro período o que puder ser feito na rua.`
+    : `Em ${m.municipio_nome}, nenhum período teve horas em alerta: siga a rotina e acompanhe a previsão.`;
+
+  const geral = estatPeriodos(D.horas);
+  const g = maiorPeriodo(geral);
+  const tambem = top.pct > 0 && top.p === g.p ? " também" : "";
+  document.getElementById("periodos-geral").textContent =
+    `Somando os ${D.municipios.length} municípios, a ${g.p}${tambem} é o período com mais alerta: ${pct(g.pct)} das horas.`;
+}
+
+/* ===================== Pergunta 2: ranking ===================== */
+function renderRanking() {
+  const ids = [...niveis.keys()].sort();
+  const linhas = D.municipios.map((m) => {
+    const hs = porMun.get(m.municipio_id);
+    const cont = ids.map((id) => hs.filter((h) => h.nivel_id === id).length);
+    const alerta = hs.filter((h) => h.nivel_id >= 1).length;
+    return { m, hs, cont, alerta, pct: hs.length ? (alerta / hs.length) * 100 : 0, max: Math.max(...hs.map((h) => h.nivel_id)) };
+  }).sort((a, b) => b.pct - a.pct);
+
+  const lista = document.getElementById("ranking");
+  lista.innerHTML = linhas.map((l, i) => {
+    const sel = l.m.municipio_id === atual;
+    const segs = ids.map((id, k) => l.cont[k] ? `<span style="width:${(l.cont[k] / l.hs.length) * 100}%;background:${esc(niveis.get(id).cor_fundo_hex)}"></span>` : "").join("");
+    const porNivel = ids.map((id, k) => [id, l.cont[k]]).filter(([, c]) => c > 0)
+      .map(([id, c]) => `${niveis.get(id).nivel_nome}: ${n0(c)}\u00a0h`);
+    return `<li><button type="button" class="rank-item" data-id="${l.m.municipio_id}" aria-pressed="${sel}">
+      <span class="rank-topo"><span class="rank-pos">${i + 1}</span><span class="rank-nome">${esc(l.m.municipio_nome)}</span><span class="rank-pct">${pct(l.pct)}</span></span>
+      <span class="pilha" aria-hidden="true">${segs}</span>
+      <span class="rank-det"><span>${n0(l.alerta)} de ${n0(l.hs.length)} horas em alerta. ${esc(porNivel.join("; "))}.</span></span>
+      <span class="rank-det" style="margin-top:6px">Nível máximo: ${selo(l.max)}${sel ? '<span class="rank-sel">Selecionado</span>' : ""}</span>
+    </button></li>`;
+  }).join("");
+  lista.querySelectorAll(".rank-item").forEach((b) => b.addEventListener("click", () => {
+    const id = Number(b.dataset.id);
+    selecionar(id);
+    // mantém o foco no item tocado depois de redesenhar a lista
+    const novo = lista.querySelector(`.rank-item[data-id="${id}"]`);
+    if (novo) novo.focus();
+  }));
+}
+
+/* ===================== Pergunta 5: impacto ===================== */
+function renderImpacto() {
+  const muns = D.municipios;
+  const totalMun = muns.length;
+  // nível do dia por município = maior nivel_id do dia
+  const porDia = dias.map((dia) => {
+    const lv = muns.map((m) => {
+      const hs = porMun.get(m.municipio_id).filter((h) => h.data === dia);
+      return { m, nivel: hs.length ? Math.max(...hs.map((h) => h.nivel_id)) : 0 };
+    });
+    return {
+      dia, lv,
+      pior: Math.max(...lv.map((x) => x.nivel)),
+      pop1: soma(lv.filter((x) => x.nivel >= 1), (x) => x.m.populacao || 0),
+      pop2: soma(lv.filter((x) => x.nivel >= 2), (x) => x.m.populacao || 0),
+      emAlerta: lv.filter((x) => x.nivel >= 1).length,
+    };
+  });
+  const pessoasDia1 = soma(porDia, (d) => d.pop1);
+  const pessoasDia2 = soma(porDia, (d) => d.pop2);
+  const maxDia2 = Math.max(...porDia.map((d) => d.pop2));
+  // pessoas (sem repetir) em municípios que chegaram a nível ≥ 2 em algum dia
+  const munsFortes = muns.filter((m) => porDia.some((d) => d.lv.find((x) => x.m === m).nivel >= 2));
+  const pessoas2 = soma(munsFortes, (m) => m.populacao || 0);
+  const diasFortes = porDia.filter((d) => d.pior >= 2);
+  const n2 = niveis.get(2).nivel_nome, n3 = niveis.get(3).nivel_nome;
+
+  document.getElementById("impacto").innerHTML = `
+    <div class="impacto-bloco">
+      <p class="impacto-num">${n0(pessoas2)}</p>
+      <p class="impacto-rot">pessoas vivem em municípios que chegaram a ${esc(n2)} ou ${esc(n3)} entre ${dataBR(dias[0])} e ${dataBR(dias[dias.length - 1])}. No pior dia, foram ${n0(maxDia2)}; somando os dias, ${n0(pessoasDia2)} pessoas-dia.</p>
+    </div>
+    <div class="impacto-bloco">
+      <p class="impacto-num">${n0(pessoasDia1)}</p>
+      <p class="impacto-rot">pessoas-dia em algum alerta (${esc(niveis.get(1).nivel_nome)} ou acima).</p>
+      <p class="nota">Pessoas-dia somam a população de cada município em cada dia em que ele ficou em alerta: uma cidade de 100 mil pessoas em alerta por 3 dias conta 300 mil pessoas-dia.</p>
+    </div>
+    <div class="impacto-bloco">
+      <p class="impacto-num">${n0(diasFortes.length)} <small style="font-size:1.125rem">de ${n0(dias.length)} dias</small></p>
+      <p class="impacto-rot">com ${esc(n2)} ou ${esc(n3)} em pelo menos um município${diasFortes.length ? ": " + esc(juntar(diasFortes.map((d) => dataBR(d.dia)))) : ""}.</p>
+    </div>`;
+
+  document.getElementById("impacto-honesto").textContent = pessoas2 === 0
+    ? `Ninguém viveu em município com ${n2} ou ${n3} no período. Os sinais passaram do limiar de ${niveis.get(1).nivel_nome}, mas não do de ${n2}, e a Belka não emite aviso forte sem motivo.`
+    : `${n0(pessoas2)} pessoas viveram em municípios que chegaram a ${n2} ou ${n3}. É para essas pessoas que o aviso precisa chegar primeiro.`;
+
+  // calendário: semanas começando no domingo
+  const cal = document.getElementById("calendario");
+  const cab = SEM_CURTA.map(([c, l]) => `<span class="cal-sem" aria-hidden="true"><abbr title="${l}">${c}</abbr></span>`).join("");
+  const vazios = Array.from({ length: diaSemana(dias[0]) }, () => '<span aria-hidden="true"></span>').join("");
+  cal.innerHTML = cab + vazios + porDia.map((d, i) => {
+    const nv = niveis.get(d.pior);
+    const rot = `${DIAS_SEMANA[diaSemana(d.dia)]}, ${dataBR(d.dia)}: ${nv.nivel_nome}, ${d.emAlerta} de ${totalMun} municípios em alerta`;
+    return `<span class="cal-dia" role="listitem" aria-label="${esc(rot)}" title="${esc(rot)}" style="background:${esc(nv.cor_fundo_hex)};color:${esc(nv.cor_texto_hex)}">
+      ${i === 0 || d.dia.slice(8) === "01" ? `<span style="font-size:0.8125rem">${dataBR(d.dia)}</span>` : Number(d.dia.slice(8))}<svg class="ic" aria-hidden="true"><use href="#ic-${esc(nv.icone)}"/></svg></span>`;
+  }).join("");
+
+  // dias com todos os municípios em alerta ao mesmo tempo
+  const todos = porDia.filter((d) => d.emAlerta === totalMun);
+  const soFique = todos.every((d) => d.lv.every((x) => x.nivel === 1));
+  document.getElementById("cal-todos").textContent = todos.length
+    ? `Dias com os ${totalMun} municípios em ${soFique ? niveis.get(1).nivel_nome : "alerta"} ao mesmo tempo: ${juntar(todos.map((d) => dataBR(d.dia)))} (${n0(todos[0].pop1)} pessoas em cada um).`
+    : `Em nenhum dia os ${totalMun} municípios ficaram em alerta ao mesmo tempo.`;
+
+  document.getElementById("cal-tabela").innerHTML = `<table>
+    <thead><tr><th scope="col">Dia</th><th scope="col">Pior nível</th><th scope="col" class="n">Municípios em alerta</th><th scope="col" class="n">Pessoas em alerta</th></tr></thead>
+    <tbody>${porDia.map((d) => `<tr><td>${dataBR(d.dia)}</td><td>${esc(niveis.get(d.pior).nivel_nome)}</td><td class="n">${d.emAlerta} de ${totalMun}</td><td class="n">${n0(d.pop1)}</td></tr>`).join("")}</tbody>
+  </table>`;
+}
+
+function renderAssinantes() {
+  const m = municipio(atual);
+  const v = (x) => (x == null ? '<span style="font-size:1rem">menos de 5</span>' : n0(x));
+  document.getElementById("assin-mun").textContent = m.municipio_nome;
+  document.getElementById("assin").innerHTML = `
+    <div><dt>Total</dt><dd>${v(m.assinantes)}</dd></div>
+    <div><dt>60 anos ou mais</dt><dd>${v(m.assinantes_60_mais)}</dd></div>
+    <div><dt>Recebem SMS</dt><dd>${v(m.recebem_sms)}</dd></div>`;
+}
+
+/* ===================== Como chega um alerta (exemplo) ===================== */
+function renderExemplo() {
+  const nv = niveis.get(2) || niveis.get(1);
+  // partes do alerta na ordem da fórmula: nível, o quê, onde, quando, o que fazer
+  const oQue = "Chuva forte", onde = "no seu bairro", quando = "nas próximas 2 horas";
+  const fazer = "Coloque documentos e remédios no alto.";
+  const apoio = "Abrigo mais próximo: Escola Municipal, a 450 m.";
+  document.getElementById("exemplo-celular").innerHTML = `
+    <div class="notif" role="group" aria-label="Notificação de exemplo">
+      <p class="notif-app"><span class="notif-icone" aria-hidden="true">b</span>Belka, agora</p>
+      ${selo(nv.nivel_id)}
+      <h3>${oQue} ${onde}</h3>
+      <p>${quando[0].toUpperCase() + quando.slice(1)}. ${fazer} ${apoio}</p>
+    </div>`;
+  // SMS sem acentos e com até 160 caracteres
+  const semAcento = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const sms = semAcento(`BELKA | ${nv.nivel_nome.toUpperCase()}: ${oQue.toLowerCase()} ${onde} ${quando}. ${fazer} ${apoio}`);
+  document.getElementById("exemplo-sms").textContent = sms;
+  document.getElementById("exemplo-sms-meta").textContent =
+    `${sms.length} caracteres, sem acentos, para caber em um único SMS em qualquer aparelho.` + (sms.length > 160 ? " Atenção: passou de 160." : "");
+}
+</script>
+</body>
+</html>

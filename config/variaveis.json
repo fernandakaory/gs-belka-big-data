@@ -1,0 +1,6 @@
+{
+  "belka_municipios": {
+    "value": "{\"municipios\": [{\"ibge\": 3550308, \"nome\": \"São Paulo\", \"uf\": \"SP\", \"lat\": -23.55, \"lon\": -46.63}, {\"ibge\": 3518800, \"nome\": \"Guarulhos\", \"uf\": \"SP\", \"lat\": -23.46, \"lon\": -46.53}, {\"ibge\": 3516408, \"nome\": \"Franco da Rocha\", \"uf\": \"SP\", \"lat\": -23.32, \"lon\": -46.73}, {\"ibge\": 3509502, \"nome\": \"Campinas\", \"uf\": \"SP\", \"lat\": -22.91, \"lon\": -47.06}, {\"ibge\": 3550704, \"nome\": \"São Sebastião\", \"uf\": \"SP\", \"lat\": -23.76, \"lon\": -45.41}]}",
+    "description": "Municípios piloto da Belka: código IBGE, nome, UF e coordenadas usadas na coleta"
+  }
+}
