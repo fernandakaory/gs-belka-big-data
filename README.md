@@ -14,7 +14,6 @@ A Belka é uma startup CitizenTech de alerta antecipado que transforma dados amb
 | João Pedro Borsato | 550294 |
 | Maria Fernanda Camargo | 97956 |
 | Pedro Lucas Nunes | 550366 |
-| Vinícius Bernardino | 97888 |
 
 ## Perguntas que o MVP responde
 
