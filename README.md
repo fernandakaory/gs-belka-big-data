@@ -29,8 +29,6 @@ Cada pergunta é respondida por uma consulta SQL sobre a camada Ouro (notebook `
 
 ## Arquitetura
 
-## Arquitetura
-
 <p align="center">
   <img src="img/belka.drawio.png"
        alt="Arquitetura de Dados Belka"
