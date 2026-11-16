@@ -6,6 +6,12 @@ A Belka é uma startup CitizenTech de alerta antecipado que transforma dados amb
 
 > Os níveis calculados são **indicadores experimentais** e não substituem os alertas oficiais da Defesa Civil.
 
+## Acesso ao MVP
+
+MVP público: [acessar a Belka AI](https://belka-api.salmonisland-04dfa6a6.brazilsouth.azurecontainerapps.io/).
+
+> **Disponibilidade do MVP:** a aplicação é hospedada na Azure e sua disponibilidade pelo link depende da disponibilidade de créditos da assinatura Azure for Students (Azure Student). Caso os créditos se esgotem, a aplicação poderá ficar indisponível.
+
 ## Integrantes
 
 | Nome completo | RM |
