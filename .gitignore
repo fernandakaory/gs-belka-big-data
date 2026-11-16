@@ -4,4 +4,4 @@ __pycache__/
 *.pyc
 .venv/
 .vscode/
-mvp/
+.DS_Store
